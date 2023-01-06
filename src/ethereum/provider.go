@@ -2,6 +2,7 @@ package ethereum
 
 import (
 	"context"
+	"encoding/base64"
 	"log"
 	"math/big"
 
@@ -46,11 +47,12 @@ func (p *EthProvider) GetBalanceOf(address *common.Address) big.Int {
 	return *balance
 }
 
-func (p *EthProvider) SubscribeToEvents(address *common.Address, logs chan types.Log) {
+func (p *EthProvider) SubscribeToEvents(address *common.Address, req chan near.InsertBloomFilterRequest) {
 	query := ethereum.FilterQuery{
 		Addresses: []common.Address{*address},
 	}
 
+	logs := make(chan types.Log)
 	sub, err := p.client.SubscribeFilterLogs(context.Background(), query, logs)
 	if err != nil {
 		log.Fatal(err)
@@ -62,7 +64,11 @@ func (p *EthProvider) SubscribeToEvents(address *common.Address, logs chan types
 		case vLog := <-logs:
 			blockNumber := big.NewInt(int64(vLog.BlockNumber))
 			blockHeader := p.getBlockHeader(*blockNumber)
-			go near.InsertBloomFilter(blockHeader.Bloom.Bytes())
+			bloomBase64 := base64.StdEncoding.EncodeToString(blockHeader.Bloom.Bytes())
+			req <- near.InsertBloomFilterRequest{
+				BlockNumber: vLog.BlockNumber,
+				Logs:        bloomBase64,
+			}
 		}
 	}
 }

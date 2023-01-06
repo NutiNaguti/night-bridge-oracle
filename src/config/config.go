@@ -10,8 +10,12 @@ type EthConfig struct {
 }
 
 type NearConfig struct {
-	Endpoint        string
-	BridgeAccountId string
+	Endpoint          string
+	NetworkId         string
+	KeyPath           string
+	BridgeAccountId   string
+	LiteNodeAccountId string
+	ServiceAccountId  string
 }
 
 type Config struct {
@@ -26,8 +30,12 @@ func New() *Config {
 			BridgeAddress: getEnv("ETH_BRIDGE_ADDRESS", ""),
 		},
 		Near: NearConfig{
-			Endpoint:        getEnv("NEAR_ENDPOINT", ""),
-			BridgeAccountId: getEnv("NEAR_BRIDGE_ACCOUNT_ID", ""),
+			Endpoint:          getEnv("NEAR_ENDPOINT", ""),
+			NetworkId:         getEnv("NEAR_NETWORK_ID", ""),
+			KeyPath:           getEnv("NEAR_KEY_PATH", ""),
+			BridgeAccountId:   getEnv("NEAR_BRIDGE_ACCOUNT_ID", ""),
+			LiteNodeAccountId: getEnv("NEAR_LITE_NODE_ACCOUNT_ID", ""),
+			ServiceAccountId:  getEnv("NEAR_SERVICE_ACCOUNT_ID", ""),
 		},
 	}
 }

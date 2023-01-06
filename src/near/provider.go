@@ -2,9 +2,16 @@ package near
 
 import (
 	"log"
+	"math/big"
 
 	near "github.com/aurora-is-near/near-api-go"
+	"github.com/near/borsh-go"
 )
+
+type InsertBloomFilterRequest struct {
+	BlockNumber uint64 `json:"block_number"`
+	Logs        string `json:"logs"`
+}
 
 func NewConnection(nodeUrl string) *near.Connection {
 	connection := near.NewConnection(nodeUrl)
@@ -17,7 +24,6 @@ func SetConfig(networkID string, nodeUrl string, keyPath string) *near.Config {
 		NodeURL:   nodeUrl,
 		KeyPath:   keyPath,
 	}
-
 	return &config
 }
 
@@ -26,10 +32,18 @@ func LoadAccount(connection *near.Connection, cfg *near.Config, receiverId strin
 	if err != nil {
 		log.Fatal(err)
 	}
-
 	return account
 }
 
-func InsertBloomFilter(bloom []byte) {
-
+func InsertBloomFilter(account *near.Account, receiverId string, req InsertBloomFilterRequest) {
+	serializedReq, err := borsh.Serialize(req)
+	if err != nil {
+		log.Fatal(err)
+	}
+	actions := []near.Action{{FunctionCall: near.FunctionCall{MethodName: "insert_filter", Args: serializedReq, Gas: 100_000_000_000_000, Deposit: *big.NewInt(1)}}}
+	res, err := account.SignAndSendTransaction(receiverId, actions)
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Print(res)
 }

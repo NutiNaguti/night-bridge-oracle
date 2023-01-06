@@ -7,7 +7,6 @@ import (
 	"github.com/NutiNaguti/night-bridge-oracle/config"
 	"github.com/NutiNaguti/night-bridge-oracle/ethereum"
 	"github.com/NutiNaguti/night-bridge-oracle/near"
-	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/joho/godotenv"
 )
 
@@ -29,14 +28,16 @@ func main() {
 	// --------- NEAR ---------
 	log.Print("NEAR connection started...")
 	nearConnection := near.NewConnection(conf.Near.Endpoint)
-	_ = nearConnection
+	nearConfig := near.SetConfig(conf.Near.Endpoint, conf.Near.NetworkId, conf.Near.KeyPath)
+	nearAccount := near.LoadAccount(nearConnection, nearConfig, conf.Near.ServiceAccountId)
 	log.Print("NEAR node connected")
 
 	log.Print("Subscribtion to event started...")
-	logs := make(chan types.Log)
-	go ethProvider.SubscribeToEvents(bridgeAddress, logs)
+	req := make(chan near.InsertBloomFilterRequest)
+	go ethProvider.SubscribeToEvents(bridgeAddress, req)
 
-	log.Print("Sending data to NEAR...")
+	log.Print("Sending data to NEAR started...")
+	go near.InsertBloomFilter(nearAccount, conf.Near.BridgeAccountId, <-req)
 
 	fmt.Scanln()
 }
