@@ -5,6 +5,7 @@ import (
 	"log"
 	"math/big"
 
+	"github.com/NutiNaguti/night-bridge-oracle/near"
 	"github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
@@ -59,7 +60,17 @@ func (p *EthProvider) SubscribeToEvents(address *common.Address, logs chan types
 		case err := <-sub.Err():
 			log.Fatal(err)
 		case vLog := <-logs:
-			log.Print(vLog)
+			blockNumber := big.NewInt(int64(vLog.BlockNumber))
+			blockHeader := p.getBlockHeader(*blockNumber)
+			go near.InsertBloomFilter(blockHeader.Bloom.Bytes())
 		}
 	}
+}
+
+func (p *EthProvider) getBlockHeader(blockNumber big.Int) *types.Header {
+	blockHeader, err := p.client.HeaderByNumber(context.Background(), &blockNumber)
+	if err != nil {
+		log.Fatal(err)
+	}
+	return blockHeader
 }

@@ -29,3 +29,7 @@ func LoadAccount(connection *near.Connection, cfg *near.Config, receiverId strin
 
 	return account
 }
+
+func InsertBloomFilter(bloom []byte) {
+
+}
