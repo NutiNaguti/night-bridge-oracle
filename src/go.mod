@@ -5,7 +5,14 @@ go 1.19
 require github.com/ethereum/go-ethereum v1.10.26
 
 require (
+	github.com/aurora-is-near/go-jsonrpc/v3 v3.1.1 // indirect
+	github.com/btcsuite/btcutil v1.0.2 // indirect
+	github.com/near/borsh-go v0.3.0 // indirect
+)
+
+require (
 	github.com/StackExchange/wmi v0.0.0-20180116203802-5d049714c4a6 // indirect
+	github.com/aurora-is-near/near-api-go v0.0.12
 	github.com/btcsuite/btcd/btcec/v2 v2.2.0 // indirect
 	github.com/deckarep/golang-set v1.8.0 // indirect
 	github.com/decred/dcrd/dcrec/secp256k1/v4 v4.0.1 // indirect

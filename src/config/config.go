@@ -5,17 +5,29 @@ import (
 )
 
 type EthConfig struct {
-	Endpoint string
+	Endpoint      string
+	BridgeAddress string
+}
+
+type NearConfig struct {
+	Endpoint        string
+	BridgeAccountId string
 }
 
 type Config struct {
-	Eth EthConfig
+	Eth  EthConfig
+	Near NearConfig
 }
 
 func New() *Config {
 	return &Config{
 		Eth: EthConfig{
-			Endpoint: getEnv("ETH_ENDPOINT", ""),
+			Endpoint:      getEnv("ETH_ENDPOINT", ""),
+			BridgeAddress: getEnv("ETH_BRIDGE_ADDRESS", ""),
+		},
+		Near: NearConfig{
+			Endpoint:        getEnv("NEAR_ENDPOINT", ""),
+			BridgeAccountId: getEnv("NEAR_BRIDGE_ACCOUNT_ID", ""),
 		},
 	}
 }
