@@ -4,6 +4,14 @@ import (
 	"os"
 )
 
+type DbConfig struct {
+	Host     string
+	Port     string
+	Database string
+	User     string
+	Password string
+}
+
 type EthConfig struct {
 	Endpoint      string
 	BridgeAddress string
@@ -19,12 +27,20 @@ type NearConfig struct {
 }
 
 type Config struct {
+	Db   DbConfig
 	Eth  EthConfig
 	Near NearConfig
 }
 
 func New() *Config {
 	return &Config{
+		Db: DbConfig{
+			Host:     getEnv("DB_HOST", ""),
+			Port:     getEnv("DB_PORT", ""),
+			Database: getEnv("DB_DATABASE", ""),
+			User:     getEnv("DB_USER", ""),
+			Password: getEnv("DB_PASSWORD", ""),
+		},
 		Eth: EthConfig{
 			Endpoint:      getEnv("ETH_ENDPOINT", ""),
 			BridgeAddress: getEnv("ETH_BRIDGE_ADDRESS", ""),
