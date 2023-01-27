@@ -1,11 +1,10 @@
 package near
 
 import (
-	"log"
-	"math/big"
-
 	near "github.com/aurora-is-near/near-api-go"
 	"github.com/near/borsh-go"
+	"log"
+	"math/big"
 )
 
 type InsertBloomFilterRequest struct {
@@ -40,8 +39,7 @@ func InsertBloomFilter(account *near.Account, receiverId string, req InsertBloom
 	if err != nil {
 		log.Fatal(err)
 	}
-	actions := []near.Action{{FunctionCall: near.FunctionCall{MethodName: "insert_filter", Args: serializedReq, Gas: 100_000_000_000_000, Deposit: *big.NewInt(1)}}}
-	res, err := account.SignAndSendTransaction(receiverId, actions)
+	res, err := account.FunctionCall(receiverId, "insert_filter", serializedReq, 100_000_000_000_000, *big.NewInt(1))
 	if err != nil {
 		log.Fatal(err)
 	}

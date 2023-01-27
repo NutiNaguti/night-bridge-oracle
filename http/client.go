@@ -1,4 +1,4 @@
-package httpclient
+package http
 
 import (
 	"fmt"
@@ -18,7 +18,7 @@ func SendTestRequest() {
 		log.Fatal(err)
 	}
 
-	req.Header.Add("version", "v1")
+	// req.Header.Add("version", "v1")
 	res, err := http.DefaultClient.Do(req)
 	if err != nil {
 		log.Fatal(err)
@@ -29,4 +29,8 @@ func SendTestRequest() {
 		log.Fatal(err)
 	}
 	fmt.Printf("%s", resBody)
+}
+
+func AddNewTransaction() {
+
 }
