@@ -19,7 +19,7 @@ type NearConfig struct {
 }
 
 type HttpClientConfig struct {
-	ServerURL string
+	BaseURI string
 }
 
 type Config struct {
@@ -43,7 +43,7 @@ func New() *Config {
 			ServiceAccountId:  getEnv("NEAR_SERVICE_ACCOUNT_ID", ""),
 		},
 		HttpClient: HttpClientConfig{
-			ServerURL: getEnv("HTTP_CLIENT_SERVER_PORT", ""),
+			BaseURI: getEnv("HTTP_BASE_URI", ""),
 		},
 	}
 }

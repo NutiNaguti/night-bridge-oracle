@@ -5,6 +5,7 @@ import (
 
 	"github.com/NutiNaguti/night-bridge-oracle/config"
 	"github.com/NutiNaguti/night-bridge-oracle/ethereum"
+	"github.com/NutiNaguti/night-bridge-oracle/http"
 	"github.com/NutiNaguti/night-bridge-oracle/near"
 	"github.com/joho/godotenv"
 )
@@ -18,7 +19,7 @@ func init() {
 func main() {
 	conf := config.New()
 
-	// http.SendTestRequest()
+	http.SetBaseURI(conf.HttpClient.BaseURI)
 
 	// --------- Ethereum setup ---------
 	log.Print("Ethereum connection started...")
@@ -38,13 +39,13 @@ func main() {
 	req := make(chan near.InsertBloomFilterRequest)
 	go ethProvider.SubscribeToEvents(bridgeAddress, req)
 
-	// var logsData near.InsertBloomFilterRequest
+	indexerReq := make(chan *http.IndexerRequest)
 	for {
 		select {
 		case logsData := <-req:
 			log.Print("Sending data to NEAR started...")
-			go near.InsertBloomFilter(nearAccount, conf.Near.BridgeAccountId, logsData)
-
+			go near.InsertBloomFilter(nearAccount, conf.Near.BridgeAccountId, logsData, indexerReq)
+			go http.AddNewTransaction(<-indexerReq)
 		}
 	}
 }
