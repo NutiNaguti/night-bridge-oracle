@@ -39,7 +39,7 @@ func InsertBloomFilter(account *near.Account, receiverId string, req InsertBloom
 	if err != nil {
 		log.Fatal(err)
 	}
-	res, err := account.FunctionCall(receiverId, "insert_filter", serializedReq, 100_000_000_000_000, *big.NewInt(1))
+	res, err := account.FunctionCall(receiverId, "insert_filter", serializedReq, 100_000_000_000_000, *big.NewInt(0))
 	if err != nil {
 		log.Fatal(err)
 	}
