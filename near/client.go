@@ -1,7 +1,6 @@
 package near
 
 import (
-	"encoding/json"
 	"log"
 	"math/big"
 
@@ -9,6 +8,8 @@ import (
 	near "github.com/aurora-is-near/near-api-go"
 	"github.com/near/borsh-go"
 )
+
+const TGAS = 100_000_000_000_000
 
 type InsertBloomFilterRequest struct {
 	BlockNumber uint64 `json:"block_number"`
@@ -37,27 +38,24 @@ func LoadAccount(connection *near.Connection, cfg *near.Config, receiverId strin
 	return account
 }
 
-func InsertBloomFilter(account *near.Account, receiverId string, req InsertBloomFilterRequest, indexerReq chan *http.IndexerRequest) {
+func InsertBloomFilter(account *near.Account, bridgeId string, req InsertBloomFilterRequest, indexerReq chan *http.IndexerRequest) {
 	serializedReq, err := borsh.Serialize(req)
 	if err != nil {
 		log.Fatal(err)
 	}
-	res, err := account.FunctionCall(receiverId, "insert_filter", serializedReq, 100_000_000_000_000, *big.NewInt(0))
+
+	res, err := account.FunctionCall(bridgeId, "insert_filter", serializedReq, TGAS, *big.NewInt(0))
 	if err != nil {
 		log.Fatal(err)
 	}
-	b, err := json.Marshal(res)
-	if err != nil {
-		log.Print(err)
-	}
-	log.Print(string(b))
 
-	// tx := res["transaction"].(map[string]interface{})
-	// sender := tx["signer"].(string)
-	// receiver := tx["receiver_id"].(string)
+	tx := res["transaction"].(map[string]interface{})
+	sender := tx["signer_id"].(string)
+	receiver := tx["receiver_id"].(string)
 	indexerReq <- &http.IndexerRequest{
-		Sender:    "nutinaguti.testnet",
-		Receiver:  "0x8CAB5E96E1ab09e8678a8ffC75b5D818e73D4707",
+		Sender:   sender,
+		Receiver: receiver,
+		// TODO: unhardcode
 		Amount:    "100",
 		Timestamp: "1674696071",
 	}
