@@ -1,6 +1,7 @@
 package http
 
 import (
+	"context"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -39,7 +40,7 @@ func SendTestRequest() {
 	log.Printf("%s", resBody)
 }
 
-func AddNewTransaction(r *IndexerRequest) {
+func AddNewTransaction(ctx context.Context, r *IndexerRequest) {
 	requestUrl := fmt.Sprint(baseUri, "/tx/add?sender=", r.Sender, "&receiver=", r.Receiver, "&amount=", r.Amount, "&timestamp=", r.Timestamp)
 	req, err := http.NewRequest(http.MethodPut, requestUrl, nil)
 	if err != nil {
